@@ -27,7 +27,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors(
   {
-    origin: origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   }
 ))

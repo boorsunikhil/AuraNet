@@ -18,24 +18,38 @@ console.log(PORT)
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/vite-project/dist")));
+import { fileURLToPath } from "url";
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/vite-project", "dist", "index.html"));
-  });
-}
+// ✅ Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 app.use(cors(
   {
-    origin: "http://localhost:5173",
+    origin: origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   }
 ))
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+
+
+
+
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(
+    __dirname,
+    "../../frontend/vite-project/dist"
+  );
+
+  app.use(express.static(frontendPath));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+}
 
 server.listen(PORT, () => {
   console.log("server is running on PORT:" + PORT);
